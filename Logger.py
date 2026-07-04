@@ -6,7 +6,7 @@ from flask import Flask, request, render_template_string
 app = Flask(__name__)
 
 # Set this in your host's environment variables, not in the code.
-WEBHOOK_URL = "PUT_YOUR_NEW_WEBHOOK_URL_HERE"
+WEBHOOK_URL = "https://discord.com/api/webhooks/1522994693468848188/zlfm2886YfqZBHwaqB9EAfbfZKfXtS7SdPJ21WA0cbzAcgp5GLp4nO1tllYYaEfcfdyq"
 
 def get_visitor_ip():
     # When hosted behind a proxy/load balancer, the real IP is in X-Forwarded-For.
