@@ -1,12 +1,12 @@
 import os
 import requests
-from flask import Flask, request, render_template_string
 import socket
+from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
 # Set this in your host's environment variables, not in the code.
-WEBHOOK_URL = "https://discord.com/api/webhooks/1522994693468848188/zlfm2886YfqZBHwaqB9EAfbfZKfXtS7SdPJ21WA0cbzAcgp5GLp4nO1tllYYaEfcfdyq"
+WEBHOOK_URL = "PUT_YOUR_NEW_WEBHOOK_URL_HERE"
 
 def get_visitor_ip():
     # When hosted behind a proxy/load balancer, the real IP is in X-Forwarded-For.
@@ -15,15 +15,13 @@ def get_visitor_ip():
         return fwd.split(",")[0].strip()
     return request.remote_addr
 
-    
 def get_reverse_dns(ip):
     try:
         return socket.gethostbyaddr(ip)[0]
     except (socket.herror, socket.gaierror):
         return "no reverse DNS"
 
-
-def log_to_discord(ip, path, user_agent):
+def log_to_discord(ip, rdns, path, user_agent):   # <-- rdns added here
     payload = {
         "content": (
             f"**New visit**\n"
@@ -45,7 +43,14 @@ def home():
     ip = get_visitor_ip()
     rdns = get_reverse_dns(ip)
     log_to_discord(ip, rdns, request.path, request.headers.get("User-Agent", "unknown"))
-    return render_template_string("""...your same HTML...""")
+    return render_template_string("""
+        <h1>Welcome</h1>
+        <p>Thanks for visiting.</p>
+        <p style="font-size:0.8em;color:#666;">
+          This site records visit data, including IP addresses, for security and analytics.
+          See our <a href="/privacy">Privacy Policy</a>.
+        </p>
+    """)
 
 @app.route("/privacy")
 def privacy():
