@@ -15,18 +15,19 @@ def get_visitor_ip():
         return fwd.split(",")[0].strip()
     return request.remote_addr
 
-def get_reverse_dns(ip):
-    try:
-        return socket.gethostbyaddr(ip)[0]
-    except (socket.herror, socket.gaierror):
-        return "no reverse DNS"
+#def get_reverse_dns(ip):
+#    try:
+#       return socket.gethostbyaddr(ip)[0]
+#    except (socket.herror, socket.gaierror):
+ #       return "no reverse DNS"
 
-def log_to_discord(ip, rdns, path, user_agent):   # <-- rdns added here
+def log_to_discord(ip, path, user_agent):  
+ #   log_to_discord(ip, rdns, path, user_agent):# <-- rdns added here
     payload = {
         "content": (
             f"**New visit**\n"
             f"IP: `{ip}`\n"
-            f"Reverse DNS: `{rdns}`\n"
+        #    f"Reverse DNS: `{rdns}`\n"
             f"Path: `{path}`\n"
             f"User-Agent: `{user_agent}`"
         )
@@ -41,7 +42,7 @@ def log_to_discord(ip, rdns, path, user_agent):   # <-- rdns added here
 @app.route("/")
 def home():
     ip = get_visitor_ip()
-    rdns = get_reverse_dns(ip)
+  #  rdns = get_reverse_dns(ip)
     log_to_discord(ip, rdns, request.path, request.headers.get("User-Agent", "unknown"))
     return render_template_string("""
         <h1>Welcome</h1>
