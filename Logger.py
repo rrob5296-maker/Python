@@ -47,15 +47,15 @@ def home():
         <h1>Welcome</h1>
         <p>Thanks for visiting.</p>
         <p style="font-size:0.8em;color:#666;">
-          This site records visit data, including IP addresses, for security and analytics.
-          See our <a href="/privacy">Privacy Policy</a>.
+          This site will redirect you to lessons on learning roblox lua.
+          See our <a href="/privacy">Website</a>.
         </p>
     """)
 
 @app.route("/privacy")
 def privacy():
     # Paste your existing policy here (or serve it from a template/file).
-    return "<h1>Privacy Policy</h1><p>Your policy text goes here.</p>"
+    return "<h1>Lua</h1><p>The Website is still in its early stages of development.</p>"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
