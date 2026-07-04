@@ -14,11 +14,20 @@ def get_visitor_ip():
         return fwd.split(",")[0].strip()
     return request.remote_addr
 
+    
+def get_reverse_dns(ip):
+    try:
+        return socket.gethostbyaddr(ip)[0]
+    except (socket.herror, socket.gaierror):
+        return "no reverse DNS"
+
+
 def log_to_discord(ip, path, user_agent):
     payload = {
         "content": (
             f"**New visit**\n"
             f"IP: `{ip}`\n"
+            f"Reverse DNS: `{rdns}`\n"
             f"Path: `{path}`\n"
             f"User-Agent: `{user_agent}`"
         )
@@ -33,15 +42,9 @@ def log_to_discord(ip, path, user_agent):
 @app.route("/")
 def home():
     ip = get_visitor_ip()
-    log_to_discord(ip, request.path, request.headers.get("User-Agent", "unknown"))
-    return render_template_string("""
-        <h1>Welcome</h1>
-        <p>Thanks for visiting.</p>
-        <p style="font-size:0.8em;color:#666;">
-          This site records visit data, including IP addresses, for security and analytics.
-          See our <a href="/privacy">Privacy Policy</a>.
-        </p>
-    """)
+    rdns = get_reverse_dns(ip)
+    log_to_discord(ip, rdns, request.path, request.headers.get("User-Agent", "unknown"))
+    return render_template_string("""...your same HTML...""")
 
 @app.route("/privacy")
 def privacy():
